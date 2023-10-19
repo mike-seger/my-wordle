@@ -91,12 +91,16 @@ class WordlySolver {
 
 const solver = new WordlySolver(words)
 
-function submitFeedback() {
+function submitFeedback(feedback) {
     const feedbackElem = document.getElementById('feedback')
     const outputElem = document.getElementById('output')
     const guess = solver.makeGuess(feedbackElem.value)
     outputElem.innerHTML = `Next Guess: ${guess}`
     feedbackElem.value = '' // Clear input for the next feedback
+}
+
+function restart() {
+    window.opener.postMessage('X', '*'); 
 }
 
 // Function to copy text to clipboard
@@ -109,6 +113,7 @@ function submitFeedback() {
 
 // Add the event listener
 document.getElementById('submitButton').addEventListener('click', submitFeedback)
+document.getElementById('restartButton').addEventListener('click', restart)
 
 // First guess on page load
 document.getElementById('output').innerHTML = `First Guess: ${solver.makeGuess()}`

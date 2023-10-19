@@ -316,5 +316,9 @@ function addLetter(rowBlockEl, letter){
 
 window.addEventListener('message', (event) => {
 	//console.log(event.data)
-	enterWord(event.data)
+	const word = event.data
+	if(word === 'X') {
+		gameStart()
+		window.solveWindow.postMessage('X', '*'); 
+	} else enterWord(word)
 })
