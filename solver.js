@@ -100,7 +100,9 @@ function submitFeedback(feedback) {
 }
 
 function restart() {
-    window.opener.postMessage('X', '*'); 
+    window.opener.postMessage('X', '*')
+    solver.reset()
+    solver.makeGuess()
 }
 
 // Function to copy text to clipboard

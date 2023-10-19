@@ -16,7 +16,6 @@ let remNotification = 0;
 let gameFin = 0;
 let keyPress;
 let restart;
-let restart2;
 let enterClick;
 let deleteClick;
 let chosenWord;
@@ -84,10 +83,7 @@ function gameStart(){
 	let restartBtn = document.createElement('button')
 	restartBtn.id = 'restartBtn';
 	restartBtn.innerText = 'Restart';
-	restartBtn.addEventListener("click", function restartClick(event) {
-		gameStart()
-		window.solveWindow.postMessage('X', '*'); 
-	});
+	restartBtn.addEventListener("click", doRestart);
 	navBar.append(restartBtn);
 
 	let solveBtn = document.createElement('button')
@@ -159,7 +155,7 @@ function gameStart(){
 		if(gameFin == 0){
 			let wordRow = document.getElementsByClassName('row')[currentRow];
 			submitWord(wordRow);
-		}
+		} else doRestart()
 	});
 	botKeys.append(enterKey);
 	keyboard.append(botKeys);
@@ -274,6 +270,7 @@ function submitWord(wordRow, keyPress){
 }
 
 function enterWord(word) {
+	if(gameFin == 1) return
 	let text = word.split('')
 	let wordRow = document.getElementsByClassName('row')[currentRow];
 	let rowBlockEl = wordRow.childNodes
@@ -283,6 +280,12 @@ function enterWord(word) {
 		addLetter(rowBlockEl, letter)
 	}
 	submitWord(wordRow)
+}
+
+function doRestart() {
+	gameStart()
+	if(window.solveWindow && window.solveWindow.closed)
+		window.solveWindow.postMessage('X', '*'); 
 }
 
 function addKeys(el, layout, keyClass){
@@ -315,10 +318,7 @@ function addLetter(rowBlockEl, letter){
 }
 
 window.addEventListener('message', (event) => {
-	//console.log(event.data)
 	const word = event.data
-	if(word === 'X') {
-		gameStart()
-		window.solveWindow.postMessage('X', '*'); 
-	} else enterWord(word)
+	if(word === 'X') doRestart()
+	else enterWord(word)
 })
