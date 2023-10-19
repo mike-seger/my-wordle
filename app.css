@@ -56,10 +56,14 @@ html, body{
 	margin-top: 11px;
 }
 
-#giveUpBtn{
+#giveUpBtn, #pasteBtn, #solveBtn{
 	padding: 5px 10px;
 	font-size: 17px;
 	cursor: pointer;
+}
+
+#pasteBtn, #solveBtn {
+	margin-left: 8px;
 }
 
 .game_area{

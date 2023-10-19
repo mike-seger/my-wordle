@@ -53,6 +53,7 @@ const countOccurrences = (arr, val) => arr.reduce((a, v) => (v === val ? a + 1 :
 let container = document.createElement('div');
 container.id = 'container';
 document.body.append(container);
+window.enterWord = enterWord
 
 gameStart();
 
@@ -96,16 +97,39 @@ function gameStart(){
 
 	let navBar = document.createElement('div');
 	navBar.className = 'nav_bar';
-		let giveUpBtn = document.createElement('button');
-		giveUpBtn.id = 'giveUpBtn';
-		giveUpBtn.innerText = 'Give up';
-		giveUpBtn.addEventListener("click", function quitClick(event) {
-			if(gameFin == 0){
-				notification.innerText = 'The word was ' + chosenWord + '. Press Enter to play again';
-				gameOver();
-			}
-		});
+	let giveUpBtn = document.createElement('button');
+	giveUpBtn.id = 'giveUpBtn';
+	giveUpBtn.innerText = 'Give up';
+	giveUpBtn.addEventListener("click", function quitClick(event) {
+		if(gameFin == 0){
+			notification.innerText = 'The word was ' + chosenWord + '. Press Enter to play again';
+			gameOver();
+		}
+	});
 	navBar.append(giveUpBtn);
+
+	let pasteBtn = document.createElement('button');
+	pasteBtn.id = 'pasteBtn';
+	pasteBtn.innerText = 'Paste';
+	pasteBtn.addEventListener("click", function pasteClick(event) {
+		if (navigator.clipboard) {
+			navigator.clipboard.readText().then(
+				(value) => enterWord(word)
+			)
+		}
+	})
+	navBar.append(pasteBtn);
+
+	let solveBtn = document.createElement('button')
+	solveBtn.id = 'solveBtn';
+	solveBtn.innerText = 'Solve';
+	solveBtn.addEventListener("click", function solveClick(event) {
+		if(!window.solveWindow || window.solveWindow.closed) {
+            window.solveWindow = window.open('solver.html', 'solverWindow', 'width=800,height=400');
+        }
+	});
+	navBar.append(solveBtn);
+
 	container.append(navBar);
 
 	let gameArea = document.createElement('div');
@@ -134,42 +158,41 @@ function gameStart(){
 	let keyboard = document.createElement('div');
 	keyboard.id = 'keyboard';
 
-		let topKeys = document.createElement('div');
-		topKeys.id = 'topKeys';
-		addKeys(topKeys, keyLayoutTop, 'keyboardKey_s');
-		keyboard.append(topKeys);
+	let topKeys = document.createElement('div');
+	topKeys.id = 'topKeys';
+	addKeys(topKeys, keyLayoutTop, 'keyboardKey_s');
+	keyboard.append(topKeys);
 
-		let midKeys = document.createElement('div');
-		midKeys.id = 'midKeys';
-		addKeys(midKeys, keyLayoutMid, 'keyboardKey_m');
-		keyboard.append(midKeys);
+	let midKeys = document.createElement('div');
+	midKeys.id = 'midKeys';
+	addKeys(midKeys, keyLayoutMid, 'keyboardKey_m');
+	keyboard.append(midKeys);
 
-		let botKeys = document.createElement('div');
-		botKeys.id = 'botKeys';
-		let deleteKey = document.createElement('span');
-		deleteKey.className = 'keyboardKey_l';
-		deleteKey.innerHTML = '&#x2190;';
-		deleteKey.addEventListener("click", function deleteClick(event) {
-			if(gameFin == 0){
-				let wordRow = document.getElementsByClassName('row')[currentRow];
-				let rowBlockEl = wordRow.childNodes;
-				deleteLetter(rowBlockEl);
-			}
-		});
-		botKeys.append(deleteKey);
-		addKeys(botKeys, keyLayoutBot, 'keyboardKey_s');
-		let enterKey = document.createElement('span');
-		enterKey.className = 'keyboardKey_l';
-		enterKey.innerText = 'Enter';
-		enterKey.addEventListener("click", enterClick = function(event) {
-			if(gameFin == 0){
-				let wordRow = document.getElementsByClassName('row')[currentRow];
-				let rowBlockEl = wordRow.childNodes;
-				submitWord(wordRow);
-			}
-		});
-		botKeys.append(enterKey);
-		keyboard.append(botKeys);
+	let botKeys = document.createElement('div');
+	botKeys.id = 'botKeys';
+	let deleteKey = document.createElement('span');
+	deleteKey.className = 'keyboardKey_l';
+	deleteKey.innerHTML = '&#x2190;';
+	deleteKey.addEventListener("click", function deleteClick(event) {
+		if(gameFin == 0){
+			let wordRow = document.getElementsByClassName('row')[currentRow];
+			let rowBlockEl = wordRow.childNodes;
+			deleteLetter(rowBlockEl);
+		}
+	});
+	botKeys.append(deleteKey);
+	addKeys(botKeys, keyLayoutBot, 'keyboardKey_s');
+	let enterKey = document.createElement('span');
+	enterKey.className = 'keyboardKey_l';
+	enterKey.innerText = 'Enter';
+	enterKey.addEventListener("click", enterClick = function(event) {
+		if(gameFin == 0){
+			let wordRow = document.getElementsByClassName('row')[currentRow];
+			submitWord(wordRow);
+		}
+	});
+	botKeys.append(enterKey);
+	keyboard.append(botKeys);
 
 	container.append(keyboard);
 
@@ -209,16 +232,20 @@ function submitWord(wordRow, keyPress){
 		let word = wordRow.innerText.replace(/[\n\r]/g, '');
 		if(wordlist.includes(word)){
 			let answer = [];
-			for(let i = 0; i < word.length; i++){
+			let encodedAnswer = ""
+			let encodedChar
+			for(let i = 0; i < word.length; i++) {
 				let letter = word[i].toUpperCase();
 				answer.push(letter);
 				let blockClass = 'blockGrey';
+				encodedChar = "_"
 				if(chosenWord.toUpperCase().includes(letter)){
 					if(chosenWord[i].toUpperCase() === letter){
 						score++;
 						blockClass = ' blockGreen';
+						encodedChar = letter
 						if(count(word, letter) > count(chosenWord, letter)){
-							for(j = 0; j < wordRow.childNodes.length; j++){
+							for(let j = 0; j < wordRow.childNodes.length; j++){
 								if(wordRow.childNodes[j].innerText == letter && wordRow.childNodes[j].className == 'row_block  blockGold'){
 									wordRow.childNodes[j].className = 'row_block  blockGrey';
 									let index = answer.indexOf(letter);
@@ -228,9 +255,10 @@ function submitWord(wordRow, keyPress){
 								}
 							}
 						}
-					}else{
+					} else {
 						if(countOccurrences(answer, letter) <= count(chosenWord, letter)){
 							blockClass = ' blockGold';
+							encodedChar = letter.toLowerCase()
 						}
 						else{
 							blockClass = ' blockGrey';
@@ -245,7 +273,12 @@ function submitWord(wordRow, keyPress){
 				else{
 					keyboard.className += ' blockGrey';
 				}
+
+				encodedAnswer += encodedChar
 			}
+
+			if(window.solveWindow && !(window.solveWindow.closed))
+				window.solveWindow.postMessage(encodedAnswer, '*'); 
 
 			if(score === 5){
 				notification.innerText = 'Well done, you won! Enter to play again';
@@ -260,14 +293,26 @@ function submitWord(wordRow, keyPress){
 				nextRowBlock = 0;
 				currentRow++;
 			}
-		}else{
+		} else{
 			remNotification = 0;
 			notification.innerText = 'Word not in list';
 		}
-	}else{
+	} else{
 		remNotification = 0;
 		notification.innerText = 'You must enter 5 characters';
 	}
+}
+
+function enterWord(word) {
+	let text = word.split('')
+	let wordRow = document.getElementsByClassName('row')[currentRow];
+	let rowBlockEl = wordRow.childNodes
+	for (let i in text) deleteLetter(rowBlockEl)
+	for (let letter of text) {
+		console.log(letter)
+		addLetter(rowBlockEl, letter)
+	}
+	submitWord(wordRow)
 }
 
 function addKeys(el, layout, keyClass){
@@ -298,3 +343,22 @@ function addLetter(rowBlockEl, letter){
 		nextRowBlock++;
 	}
 }
+
+window.addEventListener('message', (event) => {
+	//console.log(event.data)
+	enterWord(event.data)
+})
+
+// function copyToClipboard(word) {
+// 	const text = word?word : document.getElementById('output').innerText.split(': ')[1]
+// 	if (navigator.clipboard) {
+// 		navigator.clipboard.writeText(text)
+// 	}
+// }
+
+// function copyFromClipboard() {
+// 	let text = new Promise((resolve) => { resolve('');  });
+// 	if (navigator.clipboard) 
+// 		text = navigator.clipboard.readText()
+// 	return text
+// }
