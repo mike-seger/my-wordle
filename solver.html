@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Wordly Solver</title>
+    <title>Wordle Solver</title>
     <style>
         body { 
             zoom: 2; 
@@ -13,9 +13,9 @@
     </style>
 </head>
 <body>
-    <h2>Wordly Solver</h2>
+    <h2>Wordle Solver</h2>
     <label for="feedback">Enter feedback:</label>
-    <input type="text" id="feedback" placeholder="E.g., G___">
+    <input type="text" id="feedback" placeholder="E.g., G____">
     <button id="submitButton">Submit Feedback</button>
     <br /> <br />
     <div id="output"></div>
@@ -51,7 +51,7 @@
         }
         
         const url = 'wordlist.txt';
-        const words = []; // Your list of worldly words here
+        const words = []; // Your list of worldle words here
 
         await loadWordsFromURL(url, words);
 
@@ -91,6 +91,7 @@
 
                 const lastGuess = this.history[this.history.length - 1].guess;
                 this.words = this.filterWords(lastGuess, feedback);
+                console.log(this.words)
 
                 const nextGuess = this.words[Math.floor(Math.random() * this.words.length)];
                 this.history.push({ guess: nextGuess, feedback });
