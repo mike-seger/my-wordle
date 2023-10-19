@@ -56,13 +56,13 @@ html, body{
 	margin-top: 11px;
 }
 
-#giveUpBtn, #pasteBtn, #solveBtn{
+#giveUpBtn, #pasteBtn, #solveBtn, #restartBtn {
 	padding: 5px 10px;
 	font-size: 17px;
 	cursor: pointer;
 }
 
-#pasteBtn, #solveBtn {
+#pasteBtn, #solveBtn, #restartBtn {
 	margin-left: 8px;
 }
 
@@ -127,7 +127,6 @@ html, body{
 .keyboardKey_l{
 	width: 81px;
 }
-
 
 .blockGreen{
 	background-color: #35a535;

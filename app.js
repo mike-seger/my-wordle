@@ -1,31 +1,4 @@
-async function loadWordsFromURL(url, wordArray) {
-	try {
-		// Fetch the content from the URL
-		const response = await fetch(url);
-
-		// Check if the response status is OK (200)
-		if (!response.ok) {
-		throw new Error('Network response was not ok');
-		}
-
-		// Read the response body as text
-		const data = await response.text();
-
-		// Split the text into an array using line breaks
-		const words = data.split('\n');
-		
-		// Remove any empty elements from the array and add them to the provided wordArray
-		words.forEach(word => {
-		const trimmedWord = word.trim().toUpperCase();
-		if (trimmedWord !== '') {
-			wordArray.push(trimmedWord);
-		}
-		});
-	} catch (error) {
-		console.error('There was a problem fetching the data:', error);
-		throw error;
-	}
-}
+import { loadWordsFromURL } from './util.js';
   
 const url = 'wordlist.txt';
 
@@ -79,7 +52,7 @@ function gameStart(){
 	score = 0;
 	remNotification = 0;
 	let rand = Math.floor(Math.random() * wordlist.length);
-	chosenWord = wordlist[rand];
+	chosenWord = /*"COURT"// */wordlist[rand];
 
 	let logo = document.createElement('div');
 	logo.className = 'logo';
@@ -107,6 +80,15 @@ function gameStart(){
 		}
 	});
 	navBar.append(giveUpBtn);
+
+	let restartBtn = document.createElement('button')
+	restartBtn.id = 'restartBtn';
+	restartBtn.innerText = 'Restart';
+	restartBtn.addEventListener("click", function restartClick(event) {
+		gameStart()
+		window.solveWindow.postMessage('X', '*'); 
+	});
+	navBar.append(restartBtn);
 
 	let solveBtn = document.createElement('button')
 	solveBtn.id = 'solveBtn';
@@ -336,17 +318,3 @@ window.addEventListener('message', (event) => {
 	//console.log(event.data)
 	enterWord(event.data)
 })
-
-// function copyToClipboard(word) {
-// 	const text = word?word : document.getElementById('output').innerText.split(': ')[1]
-// 	if (navigator.clipboard) {
-// 		navigator.clipboard.writeText(text)
-// 	}
-// }
-
-// function copyFromClipboard() {
-// 	let text = new Promise((resolve) => { resolve('');  });
-// 	if (navigator.clipboard) 
-// 		text = navigator.clipboard.readText()
-// 	return text
-// }
