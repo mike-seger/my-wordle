@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Wordly Solver</title>
+</head>
+<body>
+    <h2>Wordly Solver</h2>
+    <label for="feedback">Enter feedback:</label>
+    <input type="text" id="feedback" placeholder="E.g., G___">
+    <button id="submitButton">Submit Feedback</button>
+    <br /> <br />
+    <div id="output"></div>
+
+    <script type="module">
+        async function loadWordsFromURL(url, wordArray) {
+            try {
+                // Fetch the content from the URL
+                const response = await fetch(url);
+
+                // Check if the response status is OK (200)
+                if (!response.ok) {
+                throw new Error('Network response was not ok');
+                }
+
+                // Read the response body as text
+                const data = await response.text();
+
+                // Split the text into an array using line breaks
+                const words = data.split('\n');
+                
+                // Remove any empty elements from the array and add them to the provided wordArray
+                words.forEach(word => {
+                const trimmedWord = word.trim().toUpperCase();
+                if (trimmedWord !== '') {
+                    wordArray.push(trimmedWord);
+                }
+                });
+            } catch (error) {
+                console.error('There was a problem fetching the data:', error);
+                throw error;
+            }
+        }
+        
+        const url = 'wordlist.txt';
+        const words = []; // Your list of worldly words here
+
+        await loadWordsFromURL(url, words);
+
+
+        class WordlySolver {
+            constructor(words) {
+                this.words = words;
+                this.history = [];
+            }
+
+            encodeFeedback(guess, word) {
+                let feedback = '';
+                for (let i = 0; i < guess.length; i++) {
+                    if (guess[i] === word[i]) {
+                        feedback += guess[i].toUpperCase();
+                    } else if (word.includes(guess[i])) {
+                        feedback += guess[i].toLowerCase();
+                    } else {
+                        feedback += '_';
+                    }
+                }
+                return feedback;
+            }
+
+            filterWords(guess, feedback) {
+                return this.words.filter(word => {
+                    return this.encodeFeedback(guess, word) === feedback;
+                });
+            }
+
+            makeGuess(feedback = '') {
+                if (feedback === '') {
+                    const guess = this.words[Math.floor(Math.random() * this.words.length)];
+                    this.history.push({ guess, feedback });
+                    return guess;
+                }
+
+                const lastGuess = this.history[this.history.length - 1].guess;
+                this.words = this.filterWords(lastGuess, feedback);
+
+                const nextGuess = this.words[Math.floor(Math.random() * this.words.length)];
+                this.history.push({ guess: nextGuess, feedback });
+                return nextGuess;
+            }
+        }
+
+        const solver = new WordlySolver(words);
+
+        function submitFeedback() {
+            const feedbackElem = document.getElementById('feedback');
+            const outputElem = document.getElementById('output');
+            const guess = solver.makeGuess(feedbackElem.value);
+            outputElem.innerHTML = `Next Guess: ${guess}`;
+            feedbackElem.value = ''; // Clear input for the next feedback
+        }
+
+
+        // Add the event listener
+        document.getElementById('submitButton').addEventListener('click', submitFeedback);
+
+        // First guess on page load
+        document.getElementById('output').innerHTML = `First Guess: ${solver.makeGuess()}`;
+
+    </script>
+</body>
+</html>
