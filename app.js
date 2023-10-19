@@ -108,18 +108,6 @@ function gameStart(){
 	});
 	navBar.append(giveUpBtn);
 
-	let pasteBtn = document.createElement('button');
-	pasteBtn.id = 'pasteBtn';
-	pasteBtn.innerText = 'Paste';
-	pasteBtn.addEventListener("click", function pasteClick(event) {
-		if (navigator.clipboard) {
-			navigator.clipboard.readText().then(
-				(value) => enterWord(word)
-			)
-		}
-	})
-	navBar.append(pasteBtn);
-
 	let solveBtn = document.createElement('button')
 	solveBtn.id = 'solveBtn';
 	solveBtn.innerText = 'Solve';
