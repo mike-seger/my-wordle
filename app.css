@@ -107,8 +107,8 @@ html, body{
 .keyboardKey_s, .keyboardKey_m, .keyboardKey_l{
 	background-color: #818384;
 	font-size: 30px;
-	height: 32px;
-	padding: 5px 0;
+	height: 39px;
+	padding: 9px 0;
 	margin: 2.5px;
 	display: flex;
 	justify-content: center;
@@ -126,6 +126,10 @@ html, body{
 
 .keyboardKey_l{
 	width: 81px;
+}
+
+.keyboardKey_Enter {
+	font-size: 30px;
 }
 
 .correct{
