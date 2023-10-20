@@ -109,6 +109,7 @@ class WordlySolver {
 
     enterWord(word) {
         if(window.opener) window.opener.postMessage(word, '*')
+        document.getElementById('output').innerHTML = `Guess: ${word}`
     }
 
     makeGuess(feedback = '') {
