@@ -78,11 +78,11 @@ html, body{
 }
 
 .row_block{
-	font-size: 40px;
+	font-size: 55px;
 	border: 1px solid;
-	width: 56px;
-	height: 51px;
-	border-radius: 12px;
+	width: 96px;
+	height: 70px;
+	border-radius: 14px;
 }
 
 #notification{
