@@ -17,7 +17,7 @@ class WordlyGame {
         this.nextRowBlock = 0;
         this.score = 0;
         this.remNotification = 0;
-        this.gameFin = 0;
+        this.finished = false;
 		const rand = Math.floor(Math.random() * this.words.length);
         this.chosenWord = this.words[rand];
         this.container.innerHTML = '';
@@ -81,10 +81,10 @@ class WordlyGame {
     }
 
 	addDeleteKey(parent) {
-		let deleteKey = this.addElement('span', 'keyboardKey_l', null, '←', parent, false);
+		let deleteKey = this.addElement('span', 'keyboardKey_l', null, '←', parent);
 		let obj = this
 		deleteKey.addEventListener("click", function deleteClick(event) {
-			if(obj.gameFin == 0){
+			if(!obj.finished){
 				let wordRow = document.getElementsByClassName('row')[obj.currentRow];
 				let rowBlockEl = wordRow.childNodes;
 				obj.deleteLetter(rowBlockEl);
@@ -93,13 +93,10 @@ class WordlyGame {
 	}
 
 	addEnterKey(parent) {
-		let enterKey = this.addElement('span', 'keyboardKey_l', null, 'Enter', parent);
-		let obj = this
-		enterKey.addEventListener("click", function enterClick(event) {
-			if(obj.gameFin == 0){
-				let wordRow = document.getElementsByClassName('row')[obj.currentRow];
-				obj.submitWord(wordRow);
-			} else obj.doRestart()
+		let enterKey = this.addElement('span', 'keyboardKey_l', null, 'Enter', parent, false);
+		enterKey.addEventListener("click", () => {
+			if(!this.finished) this.submitWord();
+			else this.doRestart()
 		});
 	}
 
@@ -136,7 +133,7 @@ class WordlyGame {
 	}
 
     handleGlobalKeyPress(event) {
-        if (this.gameFin) return;
+        if (this.finished) return;
 
         const letter = event.key.toUpperCase();
         if (letter.length === 1 && /^[A-Z]$/.test(letter)) {
@@ -149,10 +146,22 @@ class WordlyGame {
     }
 
     handleKeyPress(letter) {
-        if (this.gameFin) return;
+        if (this.finished) return;
         const wordRow = document.getElementsByClassName('row')[this.currentRow];
         this.addLetter(wordRow, letter);
     }
+
+	colorizeKey(char, className) {
+		if(className == 'absent') return
+		const key = document.getElementById(`keyboard_${char}`)
+		const isCorrect = key.classList.contains('correct')
+		if(className === 'correct' && !isCorrect) {
+			key.classList.remove('present')
+			key.classList.add(className)
+		} else if(className === 'present' && !isCorrect && !key.classList.contains('present')) {
+			key.classList.add(className)
+		}
+	}
 
     submitWord() {
         const currentRowBlocks = document.getElementsByClassName('row')[this.currentRow].getElementsByClassName('row_block');
@@ -161,30 +170,36 @@ class WordlyGame {
             wordGuessed += block.innerText;
         }
 
+		if(wordGuessed.length != 5) {
+			notification.innerText = 'You must enter 5 characters'
+			return;
+		}
+
 		let encodedAnswer = ''
         for (let i = 0; i < 5; i++) {
 			const letter = this.chosenWord[i]
 			const guessedLetter = wordGuessed[i]
+			let className = 'absent'
             if (letter === wordGuessed[i]) {
-                currentRowBlocks[i].classList.add('correct');
+                className = 'correct'
 				encodedAnswer += guessedLetter
             } else if (this.chosenWord.includes(guessedLetter)) {
-                currentRowBlocks[i].classList.add('present');
+                className = 'present'
 				encodedAnswer += guessedLetter.toLowerCase()
-            } else {
-                currentRowBlocks[i].classList.add('absent');
-				encodedAnswer += '_'
-            }
+            } else encodedAnswer += '_'
+
+			currentRowBlocks[i].classList.add(className);
+			this.colorizeKey(guessedLetter, className)
         }
 
         if (wordGuessed === this.chosenWord) {
             this.notification.innerText = "Correct! You've guessed the word.";
-            this.gameFin = 1;
+            this.finished = true;
             return;
         }
 
         if (this.currentRow === 5) {
-            this.gameFin = 1;
+            this.finished = true;
             this.notification.innerText = `You failed to guess the word. It was ${this.chosenWord}`;
             return;
         }
@@ -192,19 +207,17 @@ class WordlyGame {
 		if(window.solveWindow && !(window.solveWindow.closed))
 			window.solveWindow.postMessage(encodedAnswer, '*'); 
 
+		this.notification.innerText = `You have ${5-this.currentRow} attempt${5-this.currentRow>1?'s':''} left.`
         this.currentRow++;
         this.remNotification = 1;
     }
 
 	enterWord(word) {
-		if(this.gameFin == 1) return
+		if(this.finished) return
 		let text = word.split('')
 		let wordRow = document.getElementsByClassName('row')[this.currentRow];
 		for (let i in text) this.deleteLetter()
-		for (let letter of text) {
-			console.log(letter)
-			this.addLetter(wordRow, letter)
-		}
+		for (let letter of text) this.addLetter(wordRow, letter)
 		this.submitWord()
 	}
 
@@ -243,7 +256,7 @@ class WordlyGame {
 
     quit() {
         this.notification.innerText = `You gave up! The word was ${this.chosenWord}`;
-        this.gameFin = 1;
+        this.finished = true;
     }
 }
 

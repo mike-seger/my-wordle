@@ -1,17 +1,59 @@
 import { loadWordsFromURL } from './util.js';
 
-const url = 'wordlist.txt'
-const words = await loadWordsFromURL(url)
+const words = await loadWordsFromURL('wordlist.txt')
 
 class WordlySolver {
-    constructor(words) {
-        this.words = words
-        this.history = []
+    constructor() { 
+        this.reset() 
+        this.init()
     }
 
     reset() {
         this.words = words
         this.history = []
+    }
+
+    submitFeedback(feedback) {
+        const feedbackElem = document.getElementById('feedback')
+        const outputElem = document.getElementById('output')
+        const guess = this.makeGuess(feedbackElem.value)
+        outputElem.innerHTML = `Guess: ${guess}`
+        feedbackElem.value = ''
+        document.getElementById('submitButton').disabled = true
+    }
+    
+    restart() {
+        if(window.opener) window.opener.postMessage('X', '*')
+        this.reset()
+        this.makeGuess()
+    }
+
+    init() {
+        document.getElementById('submitButton').addEventListener('click', this.submitFeedback.bind(this))
+        document.getElementById('restartButton').addEventListener('click', this.restart.bind(this))
+        document.getElementById('output').innerHTML = `Guess: ${this.makeGuess()}`
+        document.getElementById('feedback').addEventListener('input', function() {
+            this.value = this.value.replace(/[^A-Za-z_]/g, '_')
+            document.getElementById('submitButton').disabled = (this.value.length !== 5)
+        })
+        document.getElementById('feedback').addEventListener('keyup', (e) => {
+            if (e.key === 'Enter' && this.value.length === 5) {
+                this.submitFeedback()
+            }
+        })
+        
+        const inst = this
+        window.addEventListener('message', (event) => {
+            if(event.data.length>0) {
+                if(event.data === 'X') {
+                    inst.reset()
+                    inst.makeGuess()
+                } else {
+                    document.getElementById('feedback').value = event.data
+                    document.getElementById('submitButton').disabled = (event.data.length !== 5)
+                }
+            }
+        })
     }
 /*
     encodeFeedback(guess, word) {
@@ -66,7 +108,7 @@ class WordlySolver {
     }
 
     enterWord(word) {
-        window.opener.postMessage(word, '*'); 
+        if(window.opener) window.opener.postMessage(word, '*'); 
     }
 
     makeGuess(feedback = '') {
@@ -88,55 +130,4 @@ class WordlySolver {
     }
 }
 
-const solver = new WordlySolver(words)
-
-function submitFeedback(feedback) {
-    const feedbackElem = document.getElementById('feedback')
-    const outputElem = document.getElementById('output')
-    const guess = solver.makeGuess(feedbackElem.value)
-    outputElem.innerHTML = `Next Guess: ${guess}`
-    feedbackElem.value = '' // Clear input for the next feedback
-}
-
-function restart() {
-    window.opener.postMessage('X', '*')
-    solver.reset()
-    solver.makeGuess()
-}
-
-// Function to copy text to clipboard
-// function copyToClipboard(word) {
-//     const text = word?word : document.getElementById('output').innerText.split(': ')[1]
-//     if (navigator.clipboard) {
-//         navigator.clipboard.writeText(text)
-//     }
-// }
-
-// Add the event listener
-document.getElementById('submitButton').addEventListener('click', submitFeedback)
-document.getElementById('restartButton').addEventListener('click', restart)
-
-// First guess on page load
-document.getElementById('output').innerHTML = `First Guess: ${solver.makeGuess()}`
-
-// Handle input sanitization and submit button state
-document.getElementById('feedback').addEventListener('input', function() {
-    this.value = this.value.replace(/[^A-Za-z_]/g, '_')
-    document.getElementById('submitButton').disabled = (this.value.length !== 5)
-})
-
-// Submit on Enter key press
-document.getElementById('feedback').addEventListener('keyup', function(e) {
-    if (e.key === 'Enter' && this.value.length === 5) {
-        submitFeedback()
-    }
-})
-
-window.addEventListener('message', (event) => {
-    if(event.data.length>0) {
-        if(event.data === 'X') {
-            solver.reset()
-            solver.makeGuess()
-        } else document.getElementById('feedback').value = event.data
-    }
-})
+new WordlySolver()
