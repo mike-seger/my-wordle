@@ -7,6 +7,7 @@ html, body{
 	font-family: Arial, Helvetica, sans-serif;
 	background-color: #272729;
 	color: #ffffff;
+	touch-action: manipulation;
 }
 
 #container{
@@ -115,7 +116,6 @@ html, body{
 	font-family: arial;
 	cursor: pointer;
 	text-transform: uppercase;
-	touch-action: none;
 }
 
 .keyboardKey_s{
