@@ -1,9 +1,7 @@
 import { loadWordsFromURL } from './util.js';
 
 const url = 'wordlist.txt'
-const words = [] // Your list of worldle words here
-
-await loadWordsFromURL(url, words)
+const words = await loadWordsFromURL(url)
 
 class WordlySolver {
     constructor(words) {
@@ -15,7 +13,7 @@ class WordlySolver {
         this.words = words
         this.history = []
     }
-
+/*
     encodeFeedback(guess, word) {
         let feedback = '';
         let wordLetterCount = {}; // To store frequency of each letter in the word
@@ -45,7 +43,8 @@ class WordlySolver {
     
         return feedback;
     }
-    /*
+    */
+    
     encodeFeedback(guess, word) {
         let feedback = ''
         for (let i = 0; i < guess.length; i++) {
@@ -58,7 +57,7 @@ class WordlySolver {
             }
         }
         return feedback
-    }*/
+    }
 
     filterWords(guess, feedback) {
         return this.words.filter(word => {

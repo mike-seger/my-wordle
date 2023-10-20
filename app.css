@@ -128,17 +128,17 @@ html, body{
 	width: 81px;
 }
 
-.blockGreen{
+.correct{
 	background-color: #35a535;
 	color:#fff;
 }
 
-.blockGrey{
+.absent{
 	background-color: #737373;
 	color:#fff;
 }
 
-.blockGold{
+.present{
 	background-color: #d7bf4a;
 	color:#fff;
 }

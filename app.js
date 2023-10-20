@@ -1,324 +1,250 @@
 import { loadWordsFromURL } from './util.js';
-  
-const url = 'wordlist.txt';
 
-// Initialize an empty array to store the words
-const wordlist = [];
+const words = await loadWordsFromURL('wordlist.txt')
 
-// Call the async function to load the words
+class WordlyGame {
+    constructor() {
+		this.words = words
+		this.container = document.createElement('div');
+		this.container.id = 'container';
+		document.body.append(this.container);
+		this.resetGame();
+		this.addEventListeners();
+    }
 
-await loadWordsFromURL(url, wordlist);
+    resetGame() {
+        this.currentRow = 0;
+        this.nextRowBlock = 0;
+        this.score = 0;
+        this.remNotification = 0;
+        this.gameFin = 0;
+		const rand = Math.floor(Math.random() * this.words.length);
+        this.chosenWord = this.words[rand];
+        this.container.innerHTML = '';
+		this.createUI();
+		if(window.solveWindow && window.solveWindow.closed)
+			window.solveWindow.postMessage('X', '*'); 
+    }
 
-let currentRow = 0;
-let nextRowBlock = 0;
-let score = 0;
-let remNotification = 0;
-let gameFin = 0;
-let keyPress;
-let restart;
-let enterClick;
-let deleteClick;
-let chosenWord;
-let objArray = []
-const countOccurrences = (arr, val) => arr.reduce((a, v) => (v === val ? a + 1 : a), 0);
+    createUI() {
+        this.addLogo();
+        this.addNavBar();
+        this.addGameArea();
+        this.notification = this.addElement('div', null, 'notification', 'Start guessing!');
+        this.addKeyboard();
+    }
 
-let container = document.createElement('div');
-container.id = 'container';
-document.body.append(container);
-window.enterWord = enterWord
+    addLogo() {
+        const logo = this.addElement('div', 'logo');
+        const domName = 'WORDLED';
+        const spanClasses = ['logo_green', 'logo_gold'];
 
-gameStart();
+        domName.split('').forEach((char, idx) => {
+            const logoSpan = this.addElement('span', spanClasses[idx % 2], null, char, logo);
+        });
+    }
 
-function gameOver(){
-	gameFin = 1;
-	document.removeEventListener('keyup', deleteClick, false);
-	document.removeEventListener('keyup', enterClick, false);
-	document.removeEventListener('keyup', keyPress, false);
-	document.removeEventListener('keyup', restart, false);
-	document.addEventListener('keyup', restart = function(event) {
-		if (event.key === 'Enter') {
-			document.removeEventListener('keyup', restart, false);
-			gameStart();
-		}
-	});
-}
+    addNavBar() {
+        const navBar = this.addElement('div', 'nav_bar');
+        this.addBtn('Give up', 'giveUpBtn', this.quit.bind(this), navBar);
+        this.addBtn('Restart', 'restartBtn', this.resetGame.bind(this), navBar);
+        this.addBtn('Solve', 'solveBtn', this.solve.bind(this), navBar);
+    }
 
-function gameStart(){
-	container.innerHTML = '';
-	gameFin = 0;
-	currentRow = 0;
-	nextRowBlock = 0;
-	score = 0;
-	remNotification = 0;
-	let rand = Math.floor(Math.random() * wordlist.length);
-	chosenWord = /*"COURT"// */wordlist[rand];
-
-	let logo = document.createElement('div');
-	logo.className = 'logo';
-
-	let domName = 'WORDLED';
-	for(let i = 0; i < domName.length; i++){
-		let spanClass = (i == 0 || i % 2 == 0)? 'logo_green' : 'logo_gold';
-		let logoSpan = document.createElement('span');
-		logoSpan.className = spanClass;
-		logoSpan.innerText = domName[i];
-		logo.append(logoSpan);
-	}
-
-	container.append(logo);
-
-	let navBar = document.createElement('div');
-	navBar.className = 'nav_bar';
-	let giveUpBtn = document.createElement('button');
-	giveUpBtn.id = 'giveUpBtn';
-	giveUpBtn.innerText = 'Give up';
-	giveUpBtn.addEventListener("click", function quitClick(event) {
-		if(gameFin == 0){
-			notification.innerText = 'The word was ' + chosenWord + '. Press Enter to play again';
-			gameOver();
-		}
-	});
-	navBar.append(giveUpBtn);
-
-	let restartBtn = document.createElement('button')
-	restartBtn.id = 'restartBtn';
-	restartBtn.innerText = 'Restart';
-	restartBtn.addEventListener("click", doRestart);
-	navBar.append(restartBtn);
-
-	let solveBtn = document.createElement('button')
-	solveBtn.id = 'solveBtn';
-	solveBtn.innerText = 'Solve';
-	solveBtn.addEventListener("click", function solveClick(event) {
-		if(!window.solveWindow || window.solveWindow.closed) {
-            window.solveWindow = window.open('solver.html', 'solverWindow', 'width=800,height=400');
+    addGameArea() {
+        const gameArea = this.addElement('div', 'game_area');
+        for (let i = 0; i < 6; i++) {
+            const row = this.addElement('div', 'row', null, null, gameArea);
+            for (let j = 0; j < 5; j++) {
+                this.addElement('div', 'row_block', null, null, row);
+            }
         }
-	});
-	navBar.append(solveBtn);
+    }
 
-	container.append(navBar);
+    addKeyboard() {
+        const keyboard = this.addElement('div', 'keyboard');
 
-	let gameArea = document.createElement('div');
-	gameArea.className = 'game_area';
-	for(let i = 0; i < 6; i++){
-		let row = document.createElement('div');
-		row.className = 'row';
-		for(let j = 0; j < 5; j++){
-			let rowBlock = document.createElement('div');
-			rowBlock.className = 'row_block';
-			row.append(rowBlock);
-		}
-		gameArea.append(row);
-	}
-	container.append(gameArea);
+        const layouts = [
+            { id: 'topKeys', keys: 'QWERTYUIOP', class: 'keyboardKey_s' },
+            { id: 'midKeys', keys: 'ASDFGHJKL', class: 'keyboardKey_m' },
+            { id: 'botKeys', keys: 'ZXCVBNM', class: 'keyboardKey_s' }
+        ];
 
-	let notification = document.createElement('div');
-	notification.id = 'notification';
-	notification.innerText = 'Start guessing!'
-	container.append(notification);
+        layouts.forEach(layout => {
+            const el = this.addElement('div', null, layout.id, null, keyboard);
+            this.addKeys(el, layout.keys, layout.class);
+        });
 
-	let keyLayoutTop = 'QWERTYUIOP';
-	let keyLayoutMid = 'ASDFGHJKL';
-	let keyLayoutBot = 'ZXCVBNM';
+		let botKeys = document.getElementById('botKeys')
+		this.addEnterKey(botKeys)
+		this.addDeleteKey(botKeys)
+    }
 
-	let keyboard = document.createElement('div');
-	keyboard.id = 'keyboard';
-
-	let topKeys = document.createElement('div');
-	topKeys.id = 'topKeys';
-	addKeys(topKeys, keyLayoutTop, 'keyboardKey_s');
-	keyboard.append(topKeys);
-
-	let midKeys = document.createElement('div');
-	midKeys.id = 'midKeys';
-	addKeys(midKeys, keyLayoutMid, 'keyboardKey_m');
-	keyboard.append(midKeys);
-
-	let botKeys = document.createElement('div');
-	botKeys.id = 'botKeys';
-	let deleteKey = document.createElement('span');
-	deleteKey.className = 'keyboardKey_l';
-	deleteKey.innerHTML = '&#x2190;';
-	deleteKey.addEventListener("click", function deleteClick(event) {
-		if(gameFin == 0){
-			let wordRow = document.getElementsByClassName('row')[currentRow];
-			let rowBlockEl = wordRow.childNodes;
-			deleteLetter(rowBlockEl);
-		}
-	});
-	botKeys.append(deleteKey);
-	addKeys(botKeys, keyLayoutBot, 'keyboardKey_s');
-	let enterKey = document.createElement('span');
-	enterKey.className = 'keyboardKey_l';
-	enterKey.innerText = 'Enter';
-	enterKey.addEventListener("click", enterClick = function(event) {
-		if(gameFin == 0){
-			let wordRow = document.getElementsByClassName('row')[currentRow];
-			submitWord(wordRow);
-		} else doRestart()
-	});
-	botKeys.append(enterKey);
-	keyboard.append(botKeys);
-
-	container.append(keyboard);
-
-	let alphabet = 'abcdefghijklmnopqrstuvwxyz';
-	document.addEventListener('keyup', keyPress = function(event) {
-		if(gameFin == 0){
-			let wordRow = document.getElementsByClassName('row')[currentRow];
-			let rowBlockEl = wordRow.childNodes;
-			for(let i = 0; i < alphabet.length; i++){
-				if ((event.key === alphabet[i] || event.key === alphabet[i].toUpperCase())) {
-					addLetter(rowBlockEl, alphabet[i]);
-				}
-			}
-			if (event.key === 'Enter') {
-				submitWord(wordRow, keyPress);
-			}
-			if (event.key === 'Backspace') {
-				deleteLetter(rowBlockEl);
-			}
-		}
-	});
-}
-
-function deleteLetter(rowBlockEl){
-	if(nextRowBlock > 0){
-		nextRowBlock--;
-		rowBlockEl[nextRowBlock].innerText = '';
-	}
-}
-
-function count(str, find) {
-    return (str.split(find)).length - 1;
-}
-
-function submitWord(wordRow, keyPress){
-	if(nextRowBlock > 0 && nextRowBlock % 5 == 0){
-		let word = wordRow.innerText.replace(/[\n\r]/g, '');
-		if(wordlist.includes(word)){
-			let answer = [];
-			let encodedAnswer = ""
-			let encodedChar
-			for(let i = 0; i < word.length; i++) {
-				let letter = word[i].toUpperCase();
-				answer.push(letter);
-				let blockClass = 'blockGrey';
-				encodedChar = "_"
-				if(chosenWord.toUpperCase().includes(letter)){
-					if(chosenWord[i].toUpperCase() === letter){
-						score++;
-						blockClass = ' blockGreen';
-						encodedChar = letter
-						if(count(word, letter) > count(chosenWord, letter)){
-							for(let j = 0; j < wordRow.childNodes.length; j++){
-								if(wordRow.childNodes[j].innerText == letter && wordRow.childNodes[j].className == 'row_block  blockGold'){
-									wordRow.childNodes[j].className = 'row_block  blockGrey';
-									let index = answer.indexOf(letter);
-									if (index !== -1) {
-										answer.splice(index, 1);
-									}
-								}
-							}
-						}
-					} else {
-						if(countOccurrences(answer, letter) <= count(chosenWord, letter)){
-							blockClass = ' blockGold';
-							encodedChar = letter.toLowerCase()
-						}
-						else{
-							blockClass = ' blockGrey';
-						}
-					}
-				}
-				wordRow.childNodes[i].className = 'row_block ' + blockClass;
-				let keyboard = document.getElementById('keyboard_' + letter);
-				if(chosenWord.toUpperCase().includes(letter)){
-					keyboard.className += ' blockGreen';
-				}
-				else{
-					keyboard.className += ' blockGrey';
-				}
-
-				encodedAnswer += encodedChar
-			}
-
-			if(window.solveWindow && !(window.solveWindow.closed))
-				window.solveWindow.postMessage(encodedAnswer, '*'); 
-
-			if(score === 5){
-				notification.innerText = 'Well done, you won! Enter to play again';
-				gameOver();
-			}
-			else if(currentRow == 5){
-				notification.innerText = 'You lost. The word was ' + chosenWord + '. Press Enter to play again';
-				gameOver();
-			}
-			else{
-				score = 0;
-				nextRowBlock = 0;
-				currentRow++;
-			}
-		} else{
-			remNotification = 0;
-			notification.innerText = 'Word not in list';
-		}
-	} else{
-		remNotification = 0;
-		notification.innerText = 'You must enter 5 characters';
-	}
-}
-
-function enterWord(word) {
-	if(gameFin == 1) return
-	let text = word.split('')
-	let wordRow = document.getElementsByClassName('row')[currentRow];
-	let rowBlockEl = wordRow.childNodes
-	for (let i in text) deleteLetter(rowBlockEl)
-	for (let letter of text) {
-		console.log(letter)
-		addLetter(rowBlockEl, letter)
-	}
-	submitWord(wordRow)
-}
-
-function doRestart() {
-	gameStart()
-	if(window.solveWindow && window.solveWindow.closed)
-		window.solveWindow.postMessage('X', '*'); 
-}
-
-function addKeys(el, layout, keyClass){
-	for(let i = 0; i < layout.length; i++){
-		let j = i;
-		let key = document.createElement('span');
-		key.className = keyClass;
-		key.id = 'keyboard_' + layout[i];
-		key.innerText = layout[i];
-		key.addEventListener("click", function keyboardPress(event) {
-			if(gameFin == 0){
-				let wordRow = document.getElementsByClassName('row')[currentRow];
+	addDeleteKey(parent) {
+		let deleteKey = this.addElement('span', 'keyboardKey_l', null, '←', parent, false);
+		let obj = this
+		deleteKey.addEventListener("click", function deleteClick(event) {
+			if(obj.gameFin == 0){
+				let wordRow = document.getElementsByClassName('row')[obj.currentRow];
 				let rowBlockEl = wordRow.childNodes;
-				addLetter(rowBlockEl, layout[j]);
+				obj.deleteLetter(rowBlockEl);
 			}
 		});
-		el.append(key);
 	}
+
+	addEnterKey(parent) {
+		let enterKey = this.addElement('span', 'keyboardKey_l', null, 'Enter', parent);
+		let obj = this
+		enterKey.addEventListener("click", function enterClick(event) {
+			if(obj.gameFin == 0){
+				let wordRow = document.getElementsByClassName('row')[obj.currentRow];
+				obj.submitWord(wordRow);
+			} else obj.doRestart()
+		});
+	}
+
+    addKeys(el, layout, keyClass) {
+        layout.split('').forEach(char => {
+            const key = this.addElement('span', keyClass, `keyboard_${char}`, char, el);
+            key.addEventListener('click', () => this.handleKeyPress(char));
+        });
+    }
+
+    addElement(tag, className, id, text, parent = this.container, append = true) {
+        const el = document.createElement(tag);
+        if (className) el.className = className;
+		if(id) el.id = id;
+        if (text) el.innerText = text;
+        if(append) parent.appendChild(el);
+		else parent.prepend(el);
+        return el;
+    }
+
+    addBtn(text, id, handler, parent) {
+        const btn = this.addElement('button', null, id, text, parent);
+        btn.addEventListener('click', handler);
+    }
+
+    addEventListeners() {
+		const inst = this
+        document.addEventListener('keyup', this.handleGlobalKeyPress.bind(this));
+		window.addEventListener('message', (event) => {
+			const word = event.data
+			if(word === 'X') inst.resetGame()
+			else inst.enterWord(word)
+		})
+	}
+
+    handleGlobalKeyPress(event) {
+        if (this.gameFin) return;
+
+        const letter = event.key.toUpperCase();
+        if (letter.length === 1 && /^[A-Z]$/.test(letter)) {
+            this.handleKeyPress(letter);
+        } else if (event.key === 'Enter') {
+            this.submitWord();
+        } else if (event.key === 'Backspace') {
+            this.deleteLetter();
+        }
+    }
+
+    handleKeyPress(letter) {
+        if (this.gameFin) return;
+        const wordRow = document.getElementsByClassName('row')[this.currentRow];
+        this.addLetter(wordRow, letter);
+    }
+
+    submitWord() {
+        const currentRowBlocks = document.getElementsByClassName('row')[this.currentRow].getElementsByClassName('row_block');
+        let wordGuessed = '';
+        for (const block of currentRowBlocks) {
+            wordGuessed += block.innerText;
+        }
+
+		let encodedAnswer = ''
+        for (let i = 0; i < 5; i++) {
+			const letter = this.chosenWord[i]
+			const guessedLetter = wordGuessed[i]
+            if (letter === wordGuessed[i]) {
+                currentRowBlocks[i].classList.add('correct');
+				encodedAnswer += guessedLetter
+            } else if (this.chosenWord.includes(guessedLetter)) {
+                currentRowBlocks[i].classList.add('present');
+				encodedAnswer += guessedLetter.toLowerCase()
+            } else {
+                currentRowBlocks[i].classList.add('absent');
+				encodedAnswer += '_'
+            }
+        }
+
+        if (wordGuessed === this.chosenWord) {
+            this.notification.innerText = "Correct! You've guessed the word.";
+            this.gameFin = 1;
+            return;
+        }
+
+        if (this.currentRow === 5) {
+            this.gameFin = 1;
+            this.notification.innerText = `You failed to guess the word. It was ${this.chosenWord}`;
+            return;
+        }
+
+		if(window.solveWindow && !(window.solveWindow.closed))
+			window.solveWindow.postMessage(encodedAnswer, '*'); 
+
+        this.currentRow++;
+        this.remNotification = 1;
+    }
+
+	enterWord(word) {
+		if(this.gameFin == 1) return
+		let text = word.split('')
+		let wordRow = document.getElementsByClassName('row')[this.currentRow];
+		for (let i in text) this.deleteLetter()
+		for (let letter of text) {
+			console.log(letter)
+			this.addLetter(wordRow, letter)
+		}
+		this.submitWord()
+	}
+
+    deleteLetter() {
+        if (this.remNotification) {
+            this.notification.innerText = 'Start guessing!';
+            this.remNotification = 0;
+        }
+
+        const wordRow = document.getElementsByClassName('row')[this.currentRow];
+        const currentRowBlocks = wordRow.getElementsByClassName('row_block');
+
+        for (let i = 4; i >= 0; i--) {
+            if (currentRowBlocks[i].innerText !== '') {
+                currentRowBlocks[i].innerText = '';
+                break;
+            }
+        }
+    }
+
+    addLetter(wordRow, letter) {
+        const blocks = wordRow.getElementsByClassName('row_block');
+        for (const block of blocks) {
+            if (!block.innerText) {
+                block.innerText = letter;
+                break;
+            }
+        }
+    }
+
+    solve() {
+		if(!window.solveWindow || window.solveWindow.closed) {
+			window.solveWindow = window.open('solver.html', 'solverWindow', 'width=800,height=400');
+		}
+    }
+
+    quit() {
+        this.notification.innerText = `You gave up! The word was ${this.chosenWord}`;
+        this.gameFin = 1;
+    }
 }
 
-function addLetter(rowBlockEl, letter){
-	if(remNotification == 0){
-		remNotification = 1;
-		notification.innerText = '';
-	}
-	if(nextRowBlock < 5){
-		rowBlockEl[nextRowBlock].innerText = letter.toUpperCase();
-		nextRowBlock++;
-	}
-}
-
-window.addEventListener('message', (event) => {
-	const word = event.data
-	if(word === 'X') doRestart()
-	else enterWord(word)
-})
+new WordlyGame();

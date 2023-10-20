@@ -1,4 +1,4 @@
-export async function loadWordsFromURL(url, wordArray) {
+export async function loadWordsFromURL(url) {
     try {
         // Fetch the content from the URL
         const response = await fetch(url)
@@ -15,12 +15,14 @@ export async function loadWordsFromURL(url, wordArray) {
         const words = data.split('\n')
         
         // Remove any empty elements from the array and add them to the provided wordArray
+        const wordArray = []
         words.forEach(word => {
             const trimmedWord = word.trim().toUpperCase()
             if (trimmedWord !== '') {
                 wordArray.push(trimmedWord)
             }
         })
+        return wordArray
     } catch (error) {
         console.error('There was a problem fetching the data:', error)
         throw error
