@@ -114,6 +114,8 @@ html, body{
 	justify-content: center;
 	font-family: arial;
 	cursor: pointer;
+	text-transform: uppercase;
+	touch-action: none;
 }
 
 .keyboardKey_s{
@@ -129,7 +131,8 @@ html, body{
 }
 
 .keyboardKey_Enter {
-	font-size: 30px;
+	font-size: 20px;
+	padding: 15px 0 3px 0;
 }
 
 .correct{
