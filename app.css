@@ -57,6 +57,7 @@ html, body{
 	position: absolute;
 	top: 150px;
 	left: calc((vw - 260px)/2);
+	user-select: none;
 }
 
 #giveUpBtn, #solveBtn, #restartBtn {
