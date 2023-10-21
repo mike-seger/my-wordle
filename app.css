@@ -60,9 +60,10 @@ html, body{
 }
 
 #dialog {
-	background-color: #b8c6dfa8;
+	background-color: #ffffffd4;
 	text-align: center;
-	padding: 20px;
+	padding: 4px;
+	border: 0;
 }
 
 #giveUpBtn, #pasteBtn, #solveBtn, #restartBtn, #cancelBtn {
@@ -70,8 +71,9 @@ html, body{
 	margin: 10px;
 	font-size: 26px;
 	cursor: pointer;
-	background-color: #1c3f6b;
+	background-color: #005ed4;
 	color: white;
+	width: 240px;
 	height: 49px;
 	outline: none;
 	display: block;

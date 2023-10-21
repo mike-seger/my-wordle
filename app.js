@@ -114,7 +114,7 @@ class WordlyGame {
 		let enterKey = this.addElement('span', 'keyboardKey_l keyboardKey_Enter', null, 'Enter', parent, false)
 		enterKey.addEventListener("click", () => {
 			if(!this.finished) this.submitWord()
-			else this.doRestart()
+			else this.resetGame()
 		})
 	}
 
