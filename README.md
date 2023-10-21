@@ -1,4 +1,4 @@
-# My Wordle
+# wordled
 
 
 ## run local test server

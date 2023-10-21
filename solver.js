@@ -2,7 +2,7 @@ import { loadWordsFromURL } from './util.js';
 
 const words = await loadWordsFromURL('wordlist.txt')
 
-class WordlySolver {
+class WordledSolver {
     constructor() { 
         this.reset() 
         this.init()
@@ -131,4 +131,4 @@ class WordlySolver {
     }
 }
 
-new WordlySolver()
+new WordledSolver()
