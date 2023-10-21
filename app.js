@@ -2,7 +2,7 @@ import { loadWordsFromURL } from './util.js'
 
 const words = await loadWordsFromURL('wordlist.txt')
 
-class WordlyGame {
+class WordledGame {
     constructor() {
 		this.words = words
 		this.container = document.createElement('div')
@@ -16,7 +16,6 @@ class WordlyGame {
         this.currentRow = 0
         this.nextRowBlock = 0
         this.score = 0
-        this.remNotification = 0
         this.finished = false
 		const rand = Math.floor(Math.random() * this.words.length)
         this.chosenWord = this.words[rand]
@@ -28,7 +27,7 @@ class WordlyGame {
 
     createUI() {
         this.addLogo()
-        this.addNavBar()
+        //this.addNavBar()
         this.addGameArea()
         this.notification = this.addElement('div', null, 'notification', 'Start guessing!')
         this.addKeyboard()
@@ -60,13 +59,6 @@ class WordlyGame {
 			
 			dialog.showModal()
 		})
-    }
-
-    addNavBar() {
-        const navBar = this.addElement('div', 'nav_bar')
-        this.addBtn('Give up', 'giveUpBtn', this.quit.bind(this), navBar)
-        this.addBtn('⟳', 'restartBtn', this.resetGame.bind(this), navBar)
-        this.addBtn('Solve', 'solveBtn', this.solve.bind(this), navBar)
     }
 
     addGameArea() {
@@ -238,7 +230,6 @@ class WordlyGame {
 
 		this.notification.innerText = `You have ${5-this.currentRow} attempt${5-this.currentRow>1?'s':''} left.`
         this.currentRow++
-        this.remNotification = 1
     }
 
 	enterWord(word) {
@@ -251,11 +242,6 @@ class WordlyGame {
 	}
 
     deleteLetter() {
-        if (this.remNotification) {
-            this.notification.innerText = 'Start guessing!'
-            this.remNotification = 0
-        }
-
         const wordRow = document.getElementsByClassName('row')[this.currentRow]
         const currentRowBlocks = wordRow.getElementsByClassName('row_block')
 
@@ -289,4 +275,4 @@ class WordlyGame {
     }
 }
 
-new WordlyGame()
+new WordledGame()

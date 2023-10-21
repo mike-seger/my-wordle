@@ -49,14 +49,6 @@ html, body{
 	background-color: #35a535;
 }
 
-.nav_bar {
-	text-align: center;
-	height: 38px;
-	margin-top: 10px;
-	margin-bottom: 3px;
-	display: none;
-}
-
 #dialog {
 	background-color: #ffffffd4;
 	text-align: center;
