@@ -12,7 +12,6 @@ class WordledGame {
 		})
     }
 
-	
     resetGame() {
         this.currentRow = 0
         this.nextRowBlock = 0

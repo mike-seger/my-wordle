@@ -58,6 +58,8 @@ html, body{
 	top: 150px;
 	left: calc((vw - 260px)/2);
 	user-select: none;
+	margin-top: 100;
+	margin-bottom: auto;
 }
 
 #giveUpBtn, #solveBtn, #restartBtn {

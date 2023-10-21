@@ -10,7 +10,7 @@ class WordledSolver {
     }
 
     reset() {
-        this.words = allwords
+        this.words = this.allwords
         this.history = []
     }
 
@@ -24,7 +24,7 @@ class WordledSolver {
     }
     
     restart() {
-        if(window.opener) window.opener.postMessage('X', '*')
+        if(this.isLinked()) window.opener.postMessage('X', '*')
         this.reset()
         this.makeGuess()
     }
@@ -44,6 +44,7 @@ class WordledSolver {
         })
         
         window.addEventListener('message', (event) => {
+            if(!this.isLinked()) return
             if(event.data.length>0) {
                 if(event.data === 'X') {
                     this.reset()
@@ -54,6 +55,10 @@ class WordledSolver {
                 }
             }
         })
+    }
+
+    isLinked() {
+        return window.opener && document.getElementById('linkUiCheck').checked
     }
     
     encodeFeedback(guess, word) {
@@ -77,7 +82,7 @@ class WordledSolver {
     }
 
     enterWord(word) {
-        if(window.opener) window.opener.postMessage(word, '*')
+        if(this.isLinked()) window.opener.postMessage(word, '*')
         document.getElementById('output').innerHTML = `Guess: ${word}`
     }
 
