@@ -1,15 +1,16 @@
-import { loadWordsFromURL } from './util.js';
-
-const words = await loadWordsFromURL('wordlist.txt')
+import { loadWordsFromURL } from './util.js'
 
 class WordledSolver {
     constructor() { 
-        this.reset() 
-        this.init()
+        loadWordsFromURL('wordlist.txt').then((words) => {
+            this.allwords = words
+            this.reset() 
+            this.init()
+        })
     }
 
     reset() {
-        this.words = words
+        this.words = allwords
         this.history = []
     }
 
@@ -42,12 +43,11 @@ class WordledSolver {
             }
         })
         
-        const inst = this
         window.addEventListener('message', (event) => {
             if(event.data.length>0) {
                 if(event.data === 'X') {
-                    inst.reset()
-                    inst.makeGuess()
+                    this.reset()
+                    this.makeGuess()
                 } else {
                     document.getElementById('feedback').value = event.data
                     document.getElementById('submitButton').disabled = (event.data.length !== 5)
@@ -55,37 +55,6 @@ class WordledSolver {
             }
         })
     }
-/*
-    encodeFeedback(guess, word) {
-        let feedback = '';
-        let wordLetterCount = {}; // To store frequency of each letter in the word
-    
-        // Count the frequency of each letter in the word
-        for (let letter of word) {
-            if (wordLetterCount[letter]) {
-                wordLetterCount[letter]++;
-            } else {
-                wordLetterCount[letter] = 1;
-            }
-        }
-    
-        for (let i = 0; i < guess.length; i++) {
-            if (guess[i] === word[i]) {
-                feedback += guess[i].toUpperCase();
-                if (wordLetterCount[guess[i].toUpperCase()]) {
-                    wordLetterCount[guess[i].toUpperCase()]--; // Decrement the count as it's correctly guessed
-                }
-            } else if (word.includes(guess[i]) && wordLetterCount[guess[i].toUpperCase()]) {
-                feedback += guess[i].toLowerCase();
-                wordLetterCount[guess[i].toUpperCase()]--; // Decrement the count as it's present but in wrong position
-            } else {
-                feedback += '_';
-            }
-        }
-    
-        return feedback;
-    }
-    */
     
     encodeFeedback(guess, word) {
         let feedback = ''

@@ -1,17 +1,18 @@
 import { loadWordsFromURL } from './util.js'
 
-const words = await loadWordsFromURL('wordlist.txt')
-
 class WordledGame {
     constructor() {
-		this.words = words
-		this.container = document.createElement('div')
-		this.container.id = 'container'
-		document.body.append(this.container)
-		this.resetGame()
-		this.addEventListeners()
+		loadWordsFromURL('wordlist.txt').then((words) => {
+			this.words = words
+			this.container = document.createElement('div')
+			this.container.id = 'container'
+			document.body.append(this.container)
+			this.resetGame()
+			this.addEventListeners()
+		})
     }
 
+	
     resetGame() {
         this.currentRow = 0
         this.nextRowBlock = 0
@@ -27,7 +28,6 @@ class WordledGame {
 
     createUI() {
         this.addLogo()
-        //this.addNavBar()
         this.addGameArea()
         this.notification = this.addElement('div', null, 'notification', 'Start guessing!')
         this.addKeyboard()
@@ -42,19 +42,14 @@ class WordledGame {
             const logoSpan = this.addElement('span', spanClasses[idx % 2], null, char, logo)
         })
 
-		const inst = this
 		logo.addEventListener('click', (e) => {
 			let dialog = document.querySelector("dialog");
 			if(!dialog) {
-				dialog = inst.addElement('dialog', null, 'dialog')
-				inst.addBtn('Give Up', 'giveUpBtn', inst.quit.bind(inst), dialog)
-					.addEventListener("click", () => { dialog.close() })
-				inst.addBtn('Restart Game', 'restartBtn', inst.resetGame.bind(inst), dialog)
-					.addEventListener("click", () => { dialog.close() })
-				inst.addBtn('Solve', 'solveBtn', inst.solve.bind(inst), dialog)
-					.addEventListener("click", () => { dialog.close() })
-				inst.addBtn('Cancel', 'cancelBtn', null, dialog)
-					.addEventListener("click", () => { dialog.close() })
+				dialog = this.addElement('dialog', null, 'dialog')
+				dialog.addEventListener("click", () => { dialog.close() })
+				this.addBtn('Give Up', 'giveUpBtn', this.quit.bind(this), dialog)
+				this.addBtn('Restart Game', 'restartBtn', this.resetGame.bind(this), dialog)
+				this.addBtn('Solve', 'solveBtn', this.solve.bind(this), dialog)
 			}
 			
 			dialog.showModal()
@@ -140,12 +135,11 @@ class WordledGame {
     }
 
     addEventListeners() {
-		const inst = this
         document.addEventListener('keyup', this.handleGlobalKeyPress.bind(this))
 		window.addEventListener('message', (event) => {
 			const word = event.data
-			if(word === 'X') inst.resetGame()
-			else inst.enterWord(word)
+			if(word === 'X') this.resetGame()
+			else this.enterWord(word)
 		})
 	}
 

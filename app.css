@@ -4,10 +4,11 @@ html, body{
 	width:100%;
 	height:100%;
 	overflow:hidden;
-	font-family: Helvetica, Arial, sans-serif;
+	font-family: Arial, Helvetica, sans-serif;
 	background-color: #272729;
 	color: #ffffff;
 	touch-action: manipulation;
+	user-select: none;
 }
 
 #container{
@@ -51,12 +52,14 @@ html, body{
 
 #dialog {
 	background-color: #ffffffd4;
-	text-align: center;
-	padding: 4px;
 	border: 0;
+	padding: 0;
+	position: absolute;
+	top: 150px;
+	left: calc((vw - 260px)/2);
 }
 
-#giveUpBtn, #pasteBtn, #solveBtn, #restartBtn, #cancelBtn {
+#giveUpBtn, #solveBtn, #restartBtn {
 	padding: 3px 6px;
 	margin: 10px;
 	font-size: 26px;
@@ -67,7 +70,6 @@ html, body{
 	height: 49px;
 	outline: none;
 	display: block;
-	user-select: none;
 }
 
 .game_area{
@@ -86,7 +88,6 @@ html, body{
 	width: 70px;
 	height: 60px;
 	border-radius: 14px;
-	user-select: none;
 }
 
 #notification{
@@ -96,7 +97,6 @@ html, body{
 	font-size: 24px;
 	margin: 1px 0 3px 0;
 	height: 36px;
-	user-select: none;
 }
 
 #keyboard{
@@ -120,7 +120,6 @@ html, body{
 	font-family: arial;
 	cursor: pointer;
 	text-transform: uppercase;
-	user-select: none;
 }
 
 .keyboardKey_s{
