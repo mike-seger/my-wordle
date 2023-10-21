@@ -35,13 +35,31 @@ class WordlyGame {
     }
 
     addLogo() {
-        const logo = this.addElement('div', 'logo')
+        const logo = this.addElement('div', 'logo', 'logo')
         const domName = 'WORDLED'
         const spanClasses = ['logo_green', 'logo_gold']
 
         domName.split('').forEach((char, idx) => {
             const logoSpan = this.addElement('span', spanClasses[idx % 2], null, char, logo)
         })
+
+		const inst = this
+		logo.addEventListener('click', (e) => {
+			let dialog = document.querySelector("dialog");
+			if(!dialog) {
+				dialog = inst.addElement('dialog', null, 'dialog')
+				inst.addBtn('Give Up', 'giveUpBtn', inst.quit.bind(inst), dialog)
+					.addEventListener("click", () => { dialog.close() })
+				inst.addBtn('Restart Game', 'restartBtn', inst.resetGame.bind(inst), dialog)
+					.addEventListener("click", () => { dialog.close() })
+				inst.addBtn('Solve', 'solveBtn', inst.solve.bind(inst), dialog)
+					.addEventListener("click", () => { dialog.close() })
+				inst.addBtn('Cancel', 'cancelBtn', null, dialog)
+					.addEventListener("click", () => { dialog.close() })
+			}
+			
+			dialog.showModal()
+		})
     }
 
     addNavBar() {
@@ -125,7 +143,8 @@ class WordlyGame {
 
     addBtn(text, id, handler, parent) {
         const btn = this.addElement('button', null, id, text, parent)
-        btn.addEventListener('click', handler)
+        if(handler) btn.addEventListener('click', handler)
+		return btn
     }
 
     addEventListeners() {

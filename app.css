@@ -51,34 +51,31 @@ html, body{
 	background-color: #35a535;
 }
 
-.nav_bar{
+.nav_bar {
 	text-align: center;
 	height: 38px;
 	margin-top: 10px;
 	margin-bottom: 3px;
+	display: none;
 }
 
-#giveUpBtn, #pasteBtn, #solveBtn, #restartBtn {
+#dialog {
+	background-color: #b8c6dfa8;
+	text-align: center;
+	padding: 20px;
+}
+
+#giveUpBtn, #pasteBtn, #solveBtn, #restartBtn, #cancelBtn {
 	padding: 3px 6px;
+	margin: 10px;
 	font-size: 26px;
 	cursor: pointer;
-	background-color: #9a9d9f;
+	background-color: #1c3f6b;
 	color: white;
 	height: 49px;
-	position: relative;
-	top: -2px; 
-}
-
-#pasteBtn, #solveBtn, #restartBtn {
-	margin-left: 8px;
-}
-
-#restartBtn {
-    position: relative;
-	top: -1px; 
-	/* margin: -25px 0 1px 8px; */
-	padding: 0 20px 0 20px;
-	font-size: 30px;
+	outline: none;
+	display: block;
+	user-select: none;
 }
 
 .game_area{
@@ -97,6 +94,7 @@ html, body{
 	width: 70px;
 	height: 60px;
 	border-radius: 14px;
+	user-select: none;
 }
 
 #notification{
@@ -106,6 +104,7 @@ html, body{
 	font-size: 24px;
 	margin: 1px 0 3px 0;
 	height: 36px;
+	user-select: none;
 }
 
 #keyboard{
@@ -129,6 +128,7 @@ html, body{
 	font-family: arial;
 	cursor: pointer;
 	text-transform: uppercase;
+	user-select: none;
 }
 
 .keyboardKey_s{
@@ -162,3 +162,14 @@ html, body{
 	background-color: #d7bf4a;
 	color:#fff;
 }
+
+/* ::backdrop {
+	background-image: linear-gradient(
+	  45deg,
+	  magenta,
+	  rebeccapurple,
+	  dodgerblue,
+	  green
+	);
+	opacity: 0.75;
+  } */
