@@ -17,8 +17,8 @@ html, body{
 	height: 100%;
 	display: flex;
 	flex-direction: column;
-	border-left: 1px solid;
-	border-right: 1px solid;
+	/* border-left: 1px solid;
+	border-right: 1px solid; */
 }
 
 .logo{
@@ -34,10 +34,10 @@ html, body{
 }
 
 .logo_green, .logo_gold{
-	font-size: 26px;
+	font-size: 44px;
 	color: #fff;
-	width: 49px;
-	height: 35px;
+	width: 52px;
+	height: 60px;
 	border-radius: 12px;
 	margin: 3px;
 	display: inline-block;
@@ -53,18 +53,26 @@ html, body{
 
 .nav_bar{
 	text-align: center;
-	height: 33px;
+	height: 38px;
 	margin-top: 11px;
+	margin-bottom: 3px;
 }
 
 #giveUpBtn, #pasteBtn, #solveBtn, #restartBtn {
-	padding: 5px 10px;
-	font-size: 17px;
+	padding: 3px 6px;
+	font-size: 28px;
 	cursor: pointer;
+	background-color: #818384;
+	color: white;
+	height: 46px;
 }
 
 #pasteBtn, #solveBtn, #restartBtn {
 	margin-left: 8px;
+}
+
+#restartBtn {
+	padding: 0;
 }
 
 .game_area{
@@ -80,8 +88,8 @@ html, body{
 .row_block{
 	font-size: 55px;
 	border: 1px solid;
-	width: 96px;
-	height: 70px;
+	width: 70px;
+	height: 60px;
 	border-radius: 14px;
 }
 
@@ -89,10 +97,9 @@ html, body{
 	font-family: arial;
 	text-align: center;
 	letter-spacing: 1px;
-	font-size: 19px;
-	margin-top: 5px;
-	margin-bottom: 5px;
-	height: 22px;
+	font-size: 24px;
+	margin: 1px 0 3px 0;
+	height: 36px;
 }
 
 #keyboard{

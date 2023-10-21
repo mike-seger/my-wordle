@@ -12,7 +12,24 @@
             -moz-transform-origin: 0 0;
             padding: 6px;
             margin-top: -13px;
-        } 
+        }
+
+        #feedback, #submitButton, #restartButton {
+            height: 24px;
+        }
+
+        #feedback {
+            width: 40px;
+            height: 18px;
+        }
+
+        #submitButton {
+            margin-right: 30px;
+        }
+
+        #restartButton {
+            padding: 0 5px;
+        }
     </style>
 </head>
 <body>
@@ -21,10 +38,9 @@
     <br /> 
     <br />
     <label for="feedback">Feedback:</label>
-    <input type="text" id="feedback" placeholder="E.g., Be_ch">
-    <button id="submitButton">Submit</button>
-    <br />
-    <button id="restartButton">Restart</button>
+    <input type="text" id="feedback" maxlength="5" placeholder="E.g., Be_ch">
+    <button id="submitButton">✔</button>
+    <button id="restartButton">⟳</button>
     <script src="solver.js" type="module"></script>
 </body>
 </html>

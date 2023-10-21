@@ -47,7 +47,7 @@ class WordlyGame {
     addNavBar() {
         const navBar = this.addElement('div', 'nav_bar')
         this.addBtn('Give up', 'giveUpBtn', this.quit.bind(this), navBar)
-        this.addBtn('Restart', 'restartBtn', this.resetGame.bind(this), navBar)
+        this.addBtn('⟳', 'restartBtn', this.resetGame.bind(this), navBar)
         this.addBtn('Solve', 'solveBtn', this.solve.bind(this), navBar)
     }
 
