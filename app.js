@@ -85,7 +85,7 @@ class WordledGame {
     }
 
 	addDeleteKey(parent) {
-		let deleteKey = this.addElement('span', 'keyboardKey_l', null, '←', parent)
+		let deleteKey = this.addElement('span', 'keyboardKey_l keyboardKey_Delete', null, '⬅', parent)
 		let obj = this
 		deleteKey.addEventListener("click", function deleteClick(event) {
 			if(!obj.finished){

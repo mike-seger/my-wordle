@@ -138,8 +138,13 @@ html, body{
 }
 
 .keyboardKey_Enter {
-	font-size: 20px;
+	font-size: 19px;
 	padding: 15px 0 3px 0;
+}
+
+.keyboardKey_Delete {
+	padding: 5px 0 0 0;
+	height: 52px;
 }
 
 .correct{
