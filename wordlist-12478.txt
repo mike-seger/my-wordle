@@ -1,4 +1,4 @@
-/*let wordlist = AAHED
+AAHED
 AALII
 AARGH
 AARTI
